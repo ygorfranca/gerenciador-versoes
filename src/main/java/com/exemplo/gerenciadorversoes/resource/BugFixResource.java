@@ -23,88 +23,46 @@ public class BugFixResource {
     @POST
     @Operation(summary = "Criar uma nova correção de bug")
     public Response create(@Valid BugFixDTO bugFixDTO) {
-        try {
-            BugFixDTO created = bugFixService.create(bugFixDTO);
-            return Response.status(Response.Status.CREATED).entity(created).build();
-        } catch (NotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND)
-                .entity(new ProjectResource.ErrorResponse(e.getMessage())).build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity(new ProjectResource.ErrorResponse("Erro interno do servidor")).build();
-        }
+        BugFixDTO created = bugFixService.create(bugFixDTO);
+        return Response.status(Response.Status.CREATED).entity(created).build();
     }
 
     @GET
-    @Operation(summary = "Listar todas as correções de bugs")
+    @Operation(summary = "Listar todas as correções de bug")
     public Response findAll(@QueryParam("releaseId") Long releaseId,
                            @QueryParam("title") String title) {
-        try {
-            List<BugFixDTO> bugFixes;
-            
-            if (releaseId != null) {
-                bugFixes = bugFixService.findByRelease(releaseId);
-            } else if (title != null && !title.trim().isEmpty()) {
-                bugFixes = bugFixService.findByTitle(title);
-            } else {
-                bugFixes = bugFixService.findAll();
-            }
-            
-            return Response.ok(bugFixes).build();
-        } catch (NotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND)
-                .entity(new ProjectResource.ErrorResponse(e.getMessage())).build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity(new ProjectResource.ErrorResponse("Erro interno do servidor")).build();
+        List<BugFixDTO> bugFixes;
+        if (releaseId != null) {
+            bugFixes = bugFixService.findByRelease(releaseId);
+        } else if (title != null && !title.trim().isEmpty()) {
+            bugFixes = bugFixService.findByTitle(title);
+        } else {
+            bugFixes = bugFixService.findAll();
         }
+        return Response.ok(bugFixes).build();
     }
 
     @GET
     @Path("/{id}")
     @Operation(summary = "Buscar correção de bug por ID")
     public Response findById(@PathParam("id") Long id) {
-        try {
-            BugFixDTO bugFix = bugFixService.findById(id);
-            return Response.ok(bugFix).build();
-        } catch (NotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND)
-                .entity(new ProjectResource.ErrorResponse(e.getMessage())).build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity(new ProjectResource.ErrorResponse("Erro interno do servidor")).build();
-        }
+        BugFixDTO bugFix = bugFixService.findById(id);
+        return Response.ok(bugFix).build();
     }
 
     @PUT
     @Path("/{id}")
     @Operation(summary = "Atualizar correção de bug")
     public Response update(@PathParam("id") Long id, @Valid BugFixDTO bugFixDTO) {
-        try {
-            BugFixDTO updated = bugFixService.update(id, bugFixDTO);
-            return Response.ok(updated).build();
-        } catch (NotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND)
-                .entity(new ProjectResource.ErrorResponse(e.getMessage())).build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity(new ProjectResource.ErrorResponse("Erro interno do servidor")).build();
-        }
+        BugFixDTO updated = bugFixService.update(id, bugFixDTO);
+        return Response.ok(updated).build();
     }
 
     @DELETE
     @Path("/{id}")
     @Operation(summary = "Excluir correção de bug")
     public Response delete(@PathParam("id") Long id) {
-        try {
-            bugFixService.delete(id);
-            return Response.noContent().build();
-        } catch (NotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND)
-                .entity(new ProjectResource.ErrorResponse(e.getMessage())).build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity(new ProjectResource.ErrorResponse("Erro interno do servidor")).build();
-        }
+        bugFixService.delete(id);
+        return Response.noContent().build();
     }
 }

@@ -1,10 +1,11 @@
 package com.exemplo.gerenciadorversoes.service;
 
 import com.exemplo.gerenciadorversoes.dto.ProjectDTO;
+import com.exemplo.gerenciadorversoes.exception.BusinessRuleException;
+import com.exemplo.gerenciadorversoes.exception.ResourceNotFoundException;
 import com.exemplo.gerenciadorversoes.model.Project;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.NotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,7 +25,7 @@ public class ProjectService {
     public ProjectDTO findById(Long id) {
         Project project = Project.findById(id);
         if (project == null) {
-            throw new NotFoundException("Projeto não encontrado com ID: " + id);
+            throw new ResourceNotFoundException("Projeto", "ID", id);
         }
         return new ProjectDTO(project);
     }
@@ -32,7 +33,7 @@ public class ProjectService {
     public ProjectDTO findBySlug(String slug) {
         Project project = Project.findBySlug(slug);
         if (project == null) {
-            throw new NotFoundException("Projeto não encontrado com slug: " + slug);
+            throw new ResourceNotFoundException("Projeto", "slug", slug);
         }
         return new ProjectDTO(project);
     }
@@ -53,7 +54,7 @@ public class ProjectService {
     public ProjectDTO update(Long id, ProjectDTO projectDTO) {
         Project project = Project.findById(id);
         if (project == null) {
-            throw new NotFoundException("Projeto não encontrado com ID: " + id);
+            throw new ResourceNotFoundException("Projeto", "ID", id);
         }
 
         validateUniqueSlug(projectDTO.slug, id);
@@ -69,7 +70,7 @@ public class ProjectService {
     public void delete(Long id) {
         Project project = Project.findById(id);
         if (project == null) {
-            throw new NotFoundException("Projeto não encontrado com ID: " + id);
+            throw new ResourceNotFoundException("Projeto", "ID", id);
         }
         project.delete();
     }
@@ -77,7 +78,7 @@ public class ProjectService {
     private void validateUniqueSlug(String slug, Long excludeId) {
         Project existingProject = Project.findBySlug(slug);
         if (existingProject != null && (excludeId == null || !existingProject.id.equals(excludeId))) {
-            throw new IllegalArgumentException("Slug já existe: " + slug);
+            throw new BusinessRuleException("Slug já existe: " + slug);
         }
     }
 }
