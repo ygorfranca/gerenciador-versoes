@@ -1,0 +1,24 @@
+####
+# Este Dockerfile é usado para construir uma imagem Docker executável nativa
+#
+# Antes de construir a imagem execute:
+# ./mvnw package -Pnative
+#
+# Para construir a imagem:
+# docker build -f src/main/docker/Dockerfile.native -t gerenciador-versoes .
+#
+# Para executar a imagem:
+# docker run -i --rm -p 8080:8080 gerenciador-versoes
+#
+####
+FROM registry.access.redhat.com/ubi8/ubi-minimal:8.8
+WORKDIR /work/
+RUN chown 1001 /work \
+    && chmod "g+rwX" /work \
+    && chown 1001:root /work
+COPY target/*-runner /work/application
+
+EXPOSE 8080
+USER 1001
+
+CMD ["./application", "-Dquarkus.http.host=0.0.0.0"]

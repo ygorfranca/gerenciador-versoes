@@ -1,0 +1,34 @@
+####
+# Este Dockerfile é usado para construir a imagem Docker para execução da aplicação em modo JVM
+#
+# Antes de construir a imagem Docker execute:
+# ./mvnw package
+#
+# Para construir a imagem:
+# docker build -f src/main/docker/Dockerfile.jvm -t gerenciador-versoes .
+#
+# Para executar a imagem:
+# docker run -i --rm -p 8080:8080 gerenciador-versoes
+#
+####
+FROM registry.access.redhat.com/ubi8/openjdk-17:1.15
+
+ENV LANGUAGE='en_US:en'
+
+# Configure o diretório de trabalho na imagem
+WORKDIR /work/
+
+# Copie os artefatos do Quarkus
+COPY target/quarkus-app/lib/ /work/lib/
+COPY target/quarkus-app/*.jar /work/
+COPY target/quarkus-app/app/ /work/app/
+COPY target/quarkus-app/quarkus/ /work/quarkus/
+
+# Exponha a porta 8080
+EXPOSE 8080
+
+# Configure o usuário não-root
+USER 185
+
+# Configure o comando de inicialização
+ENTRYPOINT ["java", "-jar", "/work/quarkus-run.jar"]
