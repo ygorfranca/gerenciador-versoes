@@ -22,12 +22,12 @@ public class GeneralExceptionMapper implements ExceptionMapper<Exception> {
     public Response toResponse(Exception exception) {
         LOG.errorf(exception, "Erro interno não tratado: %s", exception.getMessage());
 
-        ErrorResponse errorResponse = new ErrorResponse(
-            "Erro interno do servidor",
-            "INTERNAL_SERVER_ERROR",
-            Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
-            uriInfo.getPath()
-        );
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .message("Erro interno do servidor")
+                .error("INTERNAL_SERVER_ERROR")
+                .status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode())
+                .path(uriInfo.getPath())
+                .build();
 
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                 .entity(errorResponse)

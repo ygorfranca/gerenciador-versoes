@@ -22,12 +22,12 @@ public class BusinessRuleExceptionMapper implements ExceptionMapper<BusinessRule
     public Response toResponse(BusinessRuleException exception) {
         LOG.warnf("Violação de regra de negócio: %s", exception.getMessage());
         
-        ErrorResponse errorResponse = new ErrorResponse(
-            exception.getMessage(),
-            "BUSINESS_RULE_VIOLATION",
-            Response.Status.CONFLICT.getStatusCode(),
-            uriInfo.getPath()
-        );
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .message(exception.getMessage())
+                .error("BUSINESS_RULE_VIOLATION")
+                .status(Response.Status.CONFLICT.getStatusCode())
+                .path(uriInfo.getPath())
+                .build();
 
         return Response.status(Response.Status.CONFLICT)
                 .entity(errorResponse)

@@ -1,8 +1,11 @@
 package com.exemplo.gerenciadorversoes.exception;
 
+import lombok.Getter;
+
 /**
  * Exceção para violação de regras de negócio
  */
+@Getter
 public class BusinessRuleException extends RuntimeException {
     
     private final String code;
@@ -20,9 +23,5 @@ public class BusinessRuleException extends RuntimeException {
     public BusinessRuleException(String message, Throwable cause) {
         super(message, cause);
         this.code = null;
-    }
-
-    public String getCode() {
-        return code;
     }
 }

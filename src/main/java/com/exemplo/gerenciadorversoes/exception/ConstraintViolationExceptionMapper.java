@@ -32,14 +32,13 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
                 .map(this::createFieldError)
                 .collect(Collectors.toList());
 
-        ErrorResponse errorResponse = new ErrorResponse(
-            "Dados inválidos fornecidos",
-            "VALIDATION_FAILED",
-            Response.Status.BAD_REQUEST.getStatusCode(),
-            uriInfo.getPath()
-        );
-        
-        errorResponse.setFieldErrors(fieldErrors);
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .message("Dados inválidos fornecidos")
+                .error("VALIDATION_FAILED")
+                .status(Response.Status.BAD_REQUEST.getStatusCode())
+                .path(uriInfo.getPath())
+                .fieldErrors(fieldErrors)
+                .build();
 
         return Response.status(Response.Status.BAD_REQUEST)
                 .entity(errorResponse)
@@ -51,6 +50,10 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
         Object rejectedValue = violation.getInvalidValue();
         String message = violation.getMessage();
         
-        return new ErrorResponse.FieldError(fieldName, rejectedValue, message);
+        return ErrorResponse.FieldError.builder()
+                .field(fieldName)
+                .rejectedValue(rejectedValue)
+                .message(message)
+                .build();
     }
 }

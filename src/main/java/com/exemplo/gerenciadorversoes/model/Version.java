@@ -5,11 +5,17 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Entity
 @Table(name = "versions", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"project_id", "major", "minor", "patch"})
 })
+@Data
+@EqualsAndHashCode(callSuper = true, exclude = {"project", "release"})
+@ToString(exclude = {"project", "release"})
 public class Version extends PanacheEntity {
 
     @NotNull(message = "Major é obrigatório")

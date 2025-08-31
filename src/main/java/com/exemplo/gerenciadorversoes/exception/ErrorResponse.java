@@ -2,6 +2,10 @@ package com.exemplo.gerenciadorversoes.exception;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -9,6 +13,10 @@ import java.util.List;
 /**
  * Classe padrão para respostas de erro da API
  */
+@Data
+@Builder(toBuilder = true)
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ErrorResponse {
     
@@ -18,115 +26,34 @@ public class ErrorResponse {
     private String path;
     
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime timestamp;
+    @Builder.Default
+    private LocalDateTime timestamp = LocalDateTime.now();
     
     private List<FieldError> fieldErrors;
 
-    public ErrorResponse() {
+    public ErrorResponse(String message) {
+        this.message = message;
         this.timestamp = LocalDateTime.now();
     }
 
-    public ErrorResponse(String message) {
-        this();
-        this.message = message;
-    }
-
     public ErrorResponse(String message, String error, int status, String path) {
-        this();
         this.message = message;
         this.error = error;
         this.status = status;
         this.path = path;
-    }
-
-    // Getters e Setters
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public String getError() {
-        return error;
-    }
-
-    public void setError(String error) {
-        this.error = error;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    public LocalDateTime getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public List<FieldError> getFieldErrors() {
-        return fieldErrors;
-    }
-
-    public void setFieldErrors(List<FieldError> fieldErrors) {
-        this.fieldErrors = fieldErrors;
+        this.timestamp = LocalDateTime.now();
     }
 
     /**
      * Classe para representar erros de validação de campos
      */
+    @Data
+    @Builder(toBuilder = true)
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class FieldError {
         private String field;
         private Object rejectedValue;
         private String message;
-
-        public FieldError() {}
-
-        public FieldError(String field, Object rejectedValue, String message) {
-            this.field = field;
-            this.rejectedValue = rejectedValue;
-            this.message = message;
-        }
-
-        // Getters e Setters
-        public String getField() {
-            return field;
-        }
-
-        public void setField(String field) {
-            this.field = field;
-        }
-
-        public Object getRejectedValue() {
-            return rejectedValue;
-        }
-
-        public void setRejectedValue(Object rejectedValue) {
-            this.rejectedValue = rejectedValue;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public void setMessage(String message) {
-            this.message = message;
-        }
     }
 }

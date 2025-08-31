@@ -4,10 +4,17 @@ import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
 import java.util.List;
 
 @Entity
 @Table(name = "projects")
+@Data
+@EqualsAndHashCode(callSuper = true, exclude = {"versions"})
+@ToString(exclude = {"versions"})
 public class Project extends PanacheEntity {
 
     @NotBlank(message = "Nome é obrigatório")

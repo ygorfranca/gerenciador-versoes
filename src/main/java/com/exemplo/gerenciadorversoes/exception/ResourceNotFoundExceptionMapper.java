@@ -22,12 +22,12 @@ public class ResourceNotFoundExceptionMapper implements ExceptionMapper<Resource
     public Response toResponse(ResourceNotFoundException exception) {
         LOG.warnf("Recurso não encontrado: %s", exception.getMessage());
         
-        ErrorResponse errorResponse = new ErrorResponse(
-            exception.getMessage(),
-            "RESOURCE_NOT_FOUND",
-            Response.Status.NOT_FOUND.getStatusCode(),
-            uriInfo.getPath()
-        );
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .message(exception.getMessage())
+                .error("RESOURCE_NOT_FOUND")
+                .status(Response.Status.NOT_FOUND.getStatusCode())
+                .path(uriInfo.getPath())
+                .build();
 
         return Response.status(Response.Status.NOT_FOUND)
                 .entity(errorResponse)
