@@ -1,11 +1,12 @@
 package com.exemplo.gerenciadorversoes.service;
 
 import com.exemplo.gerenciadorversoes.dto.ReleaseDTO;
+import com.exemplo.gerenciadorversoes.exception.BusinessRuleException;
+import com.exemplo.gerenciadorversoes.exception.ResourceNotFoundException;
 import com.exemplo.gerenciadorversoes.model.Release;
 import com.exemplo.gerenciadorversoes.model.Version;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.NotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,13 +17,13 @@ public class ReleaseService {
     public ReleaseDTO create(ReleaseDTO releaseDTO) {
         Version version = Version.findById(releaseDTO.versionId);
         if (version == null) {
-            throw new NotFoundException("Versão não encontrada com ID: " + releaseDTO.versionId);
+            throw new ResourceNotFoundException("Versão não encontrada com ID: " + releaseDTO.versionId);
         }
 
         // Verificar se já existe release para esta versão
         Release existingRelease = Release.findByVersion(version);
         if (existingRelease != null) {
-            throw new IllegalArgumentException("Já existe um release para esta versão");
+            throw new BusinessRuleException("Já existe um release para esta versão");
         }
 
         Release release = new Release();
@@ -37,7 +38,7 @@ public class ReleaseService {
     public ReleaseDTO findById(Long id) {
         Release release = Release.findById(id);
         if (release == null) {
-            throw new NotFoundException("Release não encontrado com ID: " + id);
+            throw new ResourceNotFoundException("Release não encontrado com ID: " + id);
         }
         return new ReleaseDTO(release);
     }
@@ -45,12 +46,12 @@ public class ReleaseService {
     public ReleaseDTO findByVersion(Long versionId) {
         Version version = Version.findById(versionId);
         if (version == null) {
-            throw new NotFoundException("Versão não encontrada com ID: " + versionId);
+            throw new ResourceNotFoundException("Versão não encontrada com ID: " + versionId);
         }
 
         Release release = Release.findByVersion(version);
         if (release == null) {
-            throw new NotFoundException("Release não encontrado para a versão: " + versionId);
+            throw new ResourceNotFoundException("Release não encontrado para a versão: " + versionId);
         }
         return new ReleaseDTO(release);
     }
@@ -71,18 +72,18 @@ public class ReleaseService {
     public ReleaseDTO update(Long id, ReleaseDTO releaseDTO) {
         Release release = Release.findById(id);
         if (release == null) {
-            throw new NotFoundException("Release não encontrado com ID: " + id);
+            throw new ResourceNotFoundException("Release não encontrado com ID: " + id);
         }
 
         Version version = Version.findById(releaseDTO.versionId);
         if (version == null) {
-            throw new NotFoundException("Versão não encontrada com ID: " + releaseDTO.versionId);
+            throw new ResourceNotFoundException("Versão não encontrada com ID: " + releaseDTO.versionId);
         }
 
         // Verificar se já existe outro release para esta versão
         Release existingRelease = Release.findByVersion(version);
         if (existingRelease != null && !existingRelease.id.equals(id)) {
-            throw new IllegalArgumentException("Já existe um release para esta versão");
+            throw new BusinessRuleException("Já existe um release para esta versão");
         }
 
         release.title = releaseDTO.title;
@@ -96,7 +97,7 @@ public class ReleaseService {
     public void delete(Long id) {
         Release release = Release.findById(id);
         if (release == null) {
-            throw new NotFoundException("Release não encontrado com ID: " + id);
+            throw new ResourceNotFoundException("Release não encontrado com ID: " + id);
         }
         release.delete();
     }

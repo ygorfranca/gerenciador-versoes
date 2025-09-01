@@ -1,11 +1,11 @@
 package com.exemplo.gerenciadorversoes.service;
 
 import com.exemplo.gerenciadorversoes.dto.FeatureDTO;
+import com.exemplo.gerenciadorversoes.exception.ResourceNotFoundException;
 import com.exemplo.gerenciadorversoes.model.Feature;
 import com.exemplo.gerenciadorversoes.model.Release;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.NotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,7 +16,7 @@ public class FeatureService {
     public FeatureDTO create(FeatureDTO featureDTO) {
         Release release = Release.findById(featureDTO.releaseId);
         if (release == null) {
-            throw new NotFoundException("Release não encontrado com ID: " + featureDTO.releaseId);
+            throw new ResourceNotFoundException("Release não encontrado com ID: " + featureDTO.releaseId);
         }
 
         Feature feature = new Feature();
@@ -31,7 +31,7 @@ public class FeatureService {
     public FeatureDTO findById(Long id) {
         Feature feature = Feature.findById(id);
         if (feature == null) {
-            throw new NotFoundException("Feature não encontrada com ID: " + id);
+            throw new ResourceNotFoundException("Feature não encontrada com ID: " + id);
         }
         return new FeatureDTO(feature);
     }
@@ -39,7 +39,7 @@ public class FeatureService {
     public List<FeatureDTO> findByRelease(Long releaseId) {
         Release release = Release.findById(releaseId);
         if (release == null) {
-            throw new NotFoundException("Release não encontrado com ID: " + releaseId);
+            throw new ResourceNotFoundException("Release não encontrado com ID: " + releaseId);
         }
 
         return Feature.findByRelease(release).stream()
@@ -63,12 +63,12 @@ public class FeatureService {
     public FeatureDTO update(Long id, FeatureDTO featureDTO) {
         Feature feature = Feature.findById(id);
         if (feature == null) {
-            throw new NotFoundException("Feature não encontrada com ID: " + id);
+            throw new ResourceNotFoundException("Feature não encontrada com ID: " + id);
         }
 
         Release release = Release.findById(featureDTO.releaseId);
         if (release == null) {
-            throw new NotFoundException("Release não encontrado com ID: " + featureDTO.releaseId);
+            throw new ResourceNotFoundException("Release não encontrado com ID: " + featureDTO.releaseId);
         }
 
         feature.title = featureDTO.title;
@@ -82,7 +82,7 @@ public class FeatureService {
     public void delete(Long id) {
         Feature feature = Feature.findById(id);
         if (feature == null) {
-            throw new NotFoundException("Feature não encontrada com ID: " + id);
+            throw new ResourceNotFoundException("Feature não encontrada com ID: " + id);
         }
         feature.delete();
     }

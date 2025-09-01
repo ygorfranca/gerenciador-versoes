@@ -1,11 +1,12 @@
 package com.exemplo.gerenciadorversoes.service;
 
 import com.exemplo.gerenciadorversoes.dto.VersionDTO;
+import com.exemplo.gerenciadorversoes.exception.BusinessRuleException;
+import com.exemplo.gerenciadorversoes.exception.ResourceNotFoundException;
 import com.exemplo.gerenciadorversoes.model.Project;
 import com.exemplo.gerenciadorversoes.model.Version;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.NotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,7 +17,7 @@ public class VersionService {
     public VersionDTO create(VersionDTO versionDTO) {
         Project project = Project.findById(versionDTO.projectId);
         if (project == null) {
-            throw new NotFoundException("Projeto não encontrado com ID: " + versionDTO.projectId);
+            throw new ResourceNotFoundException("Projeto", "ID", versionDTO.projectId);
         }
 
         validateUniqueVersion(project, versionDTO.major, versionDTO.minor, versionDTO.patch, null);
@@ -35,7 +36,7 @@ public class VersionService {
     public VersionDTO findById(Long id) {
         Version version = Version.findById(id);
         if (version == null) {
-            throw new NotFoundException("Versão não encontrada com ID: " + id);
+            throw new ResourceNotFoundException("Versão", "ID", id);
         }
         return new VersionDTO(version);
     }
@@ -43,7 +44,7 @@ public class VersionService {
     public List<VersionDTO> findByProject(Long projectId) {
         Project project = Project.findById(projectId);
         if (project == null) {
-            throw new NotFoundException("Projeto não encontrado com ID: " + projectId);
+            throw new ResourceNotFoundException("Projeto", "ID", projectId);
         }
 
         return Version.findByProject(project).stream()
@@ -67,12 +68,12 @@ public class VersionService {
     public VersionDTO update(Long id, VersionDTO versionDTO) {
         Version version = Version.findById(id);
         if (version == null) {
-            throw new NotFoundException("Versão não encontrada com ID: " + id);
+            throw new ResourceNotFoundException("Versão", "ID", id);
         }
 
         Project project = Project.findById(versionDTO.projectId);
         if (project == null) {
-            throw new NotFoundException("Projeto não encontrado com ID: " + versionDTO.projectId);
+            throw new ResourceNotFoundException("Projeto", "ID", versionDTO.projectId);
         }
 
         validateUniqueVersion(project, versionDTO.major, versionDTO.minor, versionDTO.patch, id);
@@ -90,7 +91,7 @@ public class VersionService {
     public void delete(Long id) {
         Version version = Version.findById(id);
         if (version == null) {
-            throw new NotFoundException("Versão não encontrada com ID: " + id);
+            throw new ResourceNotFoundException("Versão", "ID", id);
         }
         version.delete();
     }
@@ -98,7 +99,7 @@ public class VersionService {
     private void validateUniqueVersion(Project project, Integer major, Integer minor, Integer patch, Long excludeId) {
         Version existingVersion = Version.findByProjectAndVersion(project, major, minor, patch);
         if (existingVersion != null && (excludeId == null || !existingVersion.id.equals(excludeId))) {
-            throw new IllegalArgumentException("Versão já existe para este projeto: " + major + "." + minor + "." + patch);
+            throw new BusinessRuleException("Versão já existe para este projeto: " + major + "." + minor + "." + patch);
         }
     }
 }

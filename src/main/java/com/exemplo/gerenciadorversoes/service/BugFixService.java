@@ -1,11 +1,11 @@
 package com.exemplo.gerenciadorversoes.service;
 
 import com.exemplo.gerenciadorversoes.dto.BugFixDTO;
+import com.exemplo.gerenciadorversoes.exception.ResourceNotFoundException;
 import com.exemplo.gerenciadorversoes.model.BugFix;
 import com.exemplo.gerenciadorversoes.model.Release;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.NotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,7 +16,7 @@ public class BugFixService {
     public BugFixDTO create(BugFixDTO bugFixDTO) {
         Release release = Release.findById(bugFixDTO.releaseId);
         if (release == null) {
-            throw new NotFoundException("Release não encontrado com ID: " + bugFixDTO.releaseId);
+            throw new ResourceNotFoundException("Release não encontrado com ID: " + bugFixDTO.releaseId);
         }
 
         BugFix bugFix = new BugFix();
@@ -31,7 +31,7 @@ public class BugFixService {
     public BugFixDTO findById(Long id) {
         BugFix bugFix = BugFix.findById(id);
         if (bugFix == null) {
-            throw new NotFoundException("Bug fix não encontrado com ID: " + id);
+            throw new ResourceNotFoundException("Bug fix não encontrado com ID: " + id);
         }
         return new BugFixDTO(bugFix);
     }
@@ -39,7 +39,7 @@ public class BugFixService {
     public List<BugFixDTO> findByRelease(Long releaseId) {
         Release release = Release.findById(releaseId);
         if (release == null) {
-            throw new NotFoundException("Release não encontrado com ID: " + releaseId);
+            throw new ResourceNotFoundException("Release não encontrado com ID: " + releaseId);
         }
 
         return BugFix.findByRelease(release).stream()
@@ -63,12 +63,12 @@ public class BugFixService {
     public BugFixDTO update(Long id, BugFixDTO bugFixDTO) {
         BugFix bugFix = BugFix.findById(id);
         if (bugFix == null) {
-            throw new NotFoundException("Bug fix não encontrado com ID: " + id);
+            throw new ResourceNotFoundException("Bug fix não encontrado com ID: " + id);
         }
 
         Release release = Release.findById(bugFixDTO.releaseId);
         if (release == null) {
-            throw new NotFoundException("Release não encontrado com ID: " + bugFixDTO.releaseId);
+            throw new ResourceNotFoundException("Release não encontrado com ID: " + bugFixDTO.releaseId);
         }
 
         bugFix.title = bugFixDTO.title;
@@ -82,7 +82,7 @@ public class BugFixService {
     public void delete(Long id) {
         BugFix bugFix = BugFix.findById(id);
         if (bugFix == null) {
-            throw new NotFoundException("Bug fix não encontrado com ID: " + id);
+            throw new ResourceNotFoundException("Bug fix não encontrado com ID: " + id);
         }
         bugFix.delete();
     }
